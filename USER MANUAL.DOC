@@ -1,0 +1,371 @@
+INTRODUCTION
+
+LandTRain program is written in R language. Thus, to run the source code, the R-3.1.1 environment (or higher versions for windows (32/64 bit), mac or Unix) shall be downloaded from the website: http://www.r-project.org/. 
+The code provides 8 possible values of the cumulated rainfall, the related duration and intensity that have possibly initiated one shallow landslide. This latter is identified in time and space in advance and before running the code by means of selecting a rain gauge series portion of hourly rainfall measures starting from the estimated hour of the landslide onset backward. The temporal series related to one landslide can be retrieved from more than one rain gauges but each temporal series will be used as different input data in the code. Concerning the length of the measure series portion it is advised to consider one month of rainfall measures from the time of the landslide onset backward. Nonetheless, the code works with series portion of length longer than 10 days. For further details on the procedure rational and rain gauge measure length, the following paper can be used as the reference: Vessia G., Parise M., Brunetti M.T., Peruccacci S., Rossi M., Vennari C., Guzzetti F. Automated reconstruction of rainfall events responsible for shallow landslides. Nat. Hazards Earth Syst. Sci., 14, 2399–2408, 2014.
+
+This manual, in the following, illustrates how to use the LandTRain.R in three steps:
+-	To run the code;
+-	To write the input file
+-	To read the output files.
+
+HOW TO RUN THE CODE
+The source code can be run in R environment. At first, the R environment shall be opened. 
+
+ 
+
+Then, open the folder where the source code LandTRain.R is placed. 
+
+
+ 
+
+After that, select all the lines from the source code and push the third button on the top left icons line.
+
+   
+
+When the code runs, two requests are addressed to the user:
+- to choose a suitable folder where creating the folder “results”;
+
+ 
+
+- to select the input file.
+
+ 
+
+It would be useful to create a folder where the source code (or the executable file) and the output files can be placed together to speed up the input step. Anyway, the program creates the RESULTS folder within the suitable folder selected by the user.
+
+
+
+HOW TO WRITE THE INPUT FILE
+The input file must be an ASCII file (eg. .txt) with a typical data frame of 5 columns as follows:
+
+raingauge	  date                time  rainfall measure (mm) intensity (mm/h)
+6055	13/04/2010 1.00.00+02:00	1	0	                0
+6055	13/04/2010 2.00.00+02:00	1	0.2	                0.2
+6055	13/04/2010 3.00.00+02:00	1	0	                0
+6055	13/04/2010 4.00.00+02:00	1	0	                0 
+
+The first column is the identifier of the rain gauge. It can be a number or character string.
+The second column refers to the date of each rainfall measure belonging to the series, that is made up of the date and the local time related to the rainfall measures.
++02.00 h represents the local time: e.g. at the date 13/04/2010 the rain gauge territory uses the “daylight saving time”, thus the rain gauge time is two hours in advance of UTC (Universal Time Coordinated). 
+The third column is the time interval between two rain gauge measures in hour.
+The fourth column is the rainfall height measure in mm.
+The fifth column represents the rainfall intensity in mm/h, calculated as the ratio between the column 4 and 3.
+The input file must not have:
+1)	Blank lines at the end of the page;
+2)	Lines with zero values of rainfall height. 
+The first condition can be easily fulfil if no blank lines follow the last one with non-zero rainfall measurements.
+The second condition can frequently takes place when the date in hour of the shallow landslide does not coincide with the end of the rain. Thus, some hours of zero rainfall measures can be considered in the portion of the rain gauge series preceding the time of the landslide onset. This part of the series shall be erased.
+
+THE NEXT STEP AFTER THE INPUT FILE READING
+When the program reads the input file, a pop up box appears to select the values of the two  input variables needed  for starting the calculations:
+1)	the dry period length;
+2)	the time window length. 
+Only one value at a time can be selected for the two variables.
+The dry period is the time interval between two successive rainfall events. This period has zero rainfall height measures. Two are the possible values to be assigned to the dry period length: 48h, that is two days and 72h, that is 3 days.
+The time window is the time period used to calculate the mean intensity in the internal calculations of the code. The possible values of time window length to be selected are four: 3h, 6h, 8h and 12h. 
+For further details and advises on the most suitable input values to be selected, the reference is Vessia et al. 2014.
+
+
+ 
+
+After choosing the selected values, push the “ok” button and the program starts working. 
+Then, at first the code checks whether the series provided by the input file is a continuous record in time. This check is aimed at detecting possible service interruptions in the rain gauge device. After checking a message is displayed communicating how long is the continuous series of measures. It is also plotted on a graph date versus rainfall height.
+
+ 
+
+ 
+
+After that, the program displays the cumulated mean rainfall intensity curve corresponding to the chosen time window. After that the program finishes and closes the R environment. 
+
+ 
+
+
+TO READ THE OUTPUT FILES
+
+The program generates two subfolders within the folder RESULTS, that are named:
+-Graphic_output
+-Text_output
+In Graphic_output there are two .pdf files that are two plots displayed during the running time:
+
+-	Discontinuous_Rainfall_Series_[inputfilename]_[time_window_lenght]x[dry_period_lenght].pdf: Beneath the title, that contains the “Rain gauge identifier”, a line reports the total length in time of the continuous series of measures. The plot shows the time series of the rainfall height measures.
+
+ 
+
+-	Intensity_Cumulated rainfall_[input file name].pdf: this file save the plot that has been already shown during the program running. This plot displays the calculated cumulated mean intensity curve according to the time window selected by the user.
+
+ 
+
+The textual output files are two ASCII files (type .txt) named: 
+-	Selected Series_[time window]+[dry period length]hour_[input file name].txt
+-	Aggregated_results.txt
+The first file reports only the portion of the input series of rainfall measures needed to calculate the cumulated E, duration D and intensity I of that rainfall event selected by the code as responsible for the landslide onset. The textual file has a table frame with 5 columns whose first 4 columns correspond to the ones of the input file. This file can be imported within a calculation sheet file type. On the fifth column, TRUE means that the corresponding measure in the line is considered for the calculation of the cumulated rainfall E, duration D and mean intensity I relating to the selected rainfall event. The FALSE value means the contrary. Finally, in this file, at the bottom of the selected series portion, E, D and I values are reported.
+
+raingauge	date	interval	quantity	intensity	selected
+6055	2010-05-02 17:00:00	1	0	0	FALSE
+6055	2010-05-02 18:00:00	1	0.39	0.39	TRUE
+6055	2010-05-02 19:00:00	1	0.96	0.96	TRUE
+6055	2010-05-02 20:00:00	1	1.34	1.34	TRUE
+6055	2010-05-02 21:00:00	1	0.19	0.19	TRUE
+6055	2010-05-02 22:00:00	1	0	0	TRUE
+6055	2010-05-02 23:00:00	1	0	0	TRUE
+6055	2010-05-03 00:00:00	1	0	0	TRUE
+6055	2010-05-03 01:00:00	1	0	0	TRUE
+6055	2010-05-03 02:00:00	1	0.2	0.2	TRUE
+6055	2010-05-03 03:00:00	1	0	0	TRUE
+6055	2010-05-03 04:00:00	1	0.19	0.19	TRUE
+6055	2010-05-03 05:00:00	1	0	0	TRUE
+6055	2010-05-03 06:00:00	1	0	0	TRUE
+6055	2010-05-03 07:00:00	1	0	0	TRUE
+6055	2010-05-03 08:00:00	1	0	0	TRUE
+6055	2010-05-03 09:00:00	1	0	0	TRUE
+6055	2010-05-03 10:00:00	1	0	0	TRUE
+6055	2010-05-03 11:00:00	1	0	0	TRUE
+6055	2010-05-03 12:00:00	1	0	0	TRUE
+6055	2010-05-03 13:00:00	1	0	0	TRUE
+6055	2010-05-03 14:00:00	1	0	0	TRUE
+6055	2010-05-03 15:00:00	1	0	0	TRUE
+6055	2010-05-03 16:00:00	1	0	0	TRUE
+6055	2010-05-03 17:00:00	1	0	0	TRUE
+6055	2010-05-03 18:00:00	1	0	0	TRUE
+6055	2010-05-03 19:00:00	1	0	0	TRUE
+6055	2010-05-03 20:00:00	1	0	0	TRUE
+6055	2010-05-03 21:00:00	1	0	0	TRUE
+6055	2010-05-03 22:00:00	1	0	0	TRUE
+6055	2010-05-03 23:00:00	1	0	0	TRUE
+6055	2010-05-04 00:00:00	1	0	0	TRUE
+6055	2010-05-04 01:00:00	1	0	0	TRUE
+6055	2010-05-04 02:00:00	1	0	0	TRUE
+6055	2010-05-04 03:00:00	1	0	0	TRUE
+6055	2010-05-04 04:00:00	1	0	0	TRUE
+6055	2010-05-04 05:00:00	1	0	0	TRUE
+6055	2010-05-04 06:00:00	1	0	0	TRUE
+6055	2010-05-04 07:00:00	1	0	0	TRUE
+6055	2010-05-04 08:00:00	1	0	0	TRUE
+6055	2010-05-04 09:00:00	1	0	0	TRUE
+6055	2010-05-04 10:00:00	1	0.96	0.96	TRUE
+6055	2010-05-04 11:00:00	1	2.3	2.3	TRUE
+6055	2010-05-04 12:00:00	1	0.96	0.96	TRUE
+6055	2010-05-04 13:00:00	1	0.19	0.19	TRUE
+6055	2010-05-04 14:00:00	1	0	0	TRUE
+6055	2010-05-04 15:00:00	1	0	0	TRUE
+6055	2010-05-04 16:00:00	1	0	0	TRUE
+6055	2010-05-04 17:00:00	1	0	0	TRUE
+6055	2010-05-04 18:00:00	1	0	0	TRUE
+6055	2010-05-04 19:00:00	1	0	0	TRUE
+6055	2010-05-04 20:00:00	1	0	0	TRUE
+6055	2010-05-04 21:00:00	1	0	0	TRUE
+6055	2010-05-04 22:00:00	1	0	0	TRUE
+6055	2010-05-04 23:00:00	1	0	0	TRUE
+6055	2010-05-05 00:00:00	1	0	0	TRUE
+6055	2010-05-05 01:00:00	1	0	0	TRUE
+6055	2010-05-05 02:00:00	1	0	0	TRUE
+6055	2010-05-05 03:00:00	1	0	0	TRUE
+6055	2010-05-05 04:00:00	1	0	0	TRUE
+6055	2010-05-05 05:00:00	1	0	0	TRUE
+6055	2010-05-05 06:00:00	1	0	0	TRUE
+6055	2010-05-05 07:00:00	1	0	0	TRUE
+6055	2010-05-05 08:00:00	1	0	0	TRUE
+6055	2010-05-05 09:00:00	1	0	0	TRUE
+6055	2010-05-05 10:00:00	1	0	0	TRUE
+6055	2010-05-05 11:00:00	1	2.77	2.77	TRUE
+6055	2010-05-05 12:00:00	1	4.86	4.86	TRUE
+6055	2010-05-05 13:00:00	1	0	0	TRUE
+6055	2010-05-05 14:00:00	1	0.19	0.19	TRUE
+6055	2010-05-05 15:00:00	1	0	0	TRUE
+6055	2010-05-05 16:00:00	1	0	0	TRUE
+6055	2010-05-05 17:00:00	1	0	0	TRUE
+6055	2010-05-05 18:00:00	1	0	0	TRUE
+6055	2010-05-05 19:00:00	1	0	0	TRUE
+6055	2010-05-05 20:00:00	1	0	0	TRUE
+6055	2010-05-05 21:00:00	1	0	0	TRUE
+6055	2010-05-05 22:00:00	1	0.2	0.2	TRUE
+6055	2010-05-05 23:00:00	1	0	0	TRUE
+6055	2010-05-06 00:00:00	1	0	0	TRUE
+6055	2010-05-06 01:00:00	1	0	0	TRUE
+6055	2010-05-06 02:00:00	1	4.41	4.41	TRUE
+6055	2010-05-06 03:00:00	1	0.77	0.77	TRUE
+6055	2010-05-06 04:00:00	1	0.19	0.19	TRUE
+6055	2010-05-06 05:00:00	1	0	0	TRUE
+6055	2010-05-06 06:00:00	1	0	0	TRUE
+6055	2010-05-06 07:00:00	1	0.19	0.19	TRUE
+6055	2010-05-06 08:00:00	1	0	0	TRUE
+6055	2010-05-06 09:00:00	1	0	0	TRUE
+6055	2010-05-06 10:00:00	1	0.2	0.2	TRUE
+6055	2010-05-06 11:00:00	1	0	0	TRUE
+6055	2010-05-06 12:00:00	1	0.57	0.57	TRUE
+6055	2010-05-06 13:00:00	1	2.12	2.12	TRUE
+6055	2010-05-06 14:00:00	1	5.26	5.26	TRUE
+6055	2010-05-06 15:00:00	1	3.7	3.7	TRUE
+6055	2010-05-06 16:00:00	1	3.77	3.77	TRUE
+6055	2010-05-06 17:00:00	1	1.95	1.95	TRUE
+6055	2010-05-06 18:00:00	1	0.77	0.77	TRUE
+6055	2010-05-06 19:00:00	1	3.11	3.11	TRUE
+6055	2010-05-06 20:00:00	1	0	0	TRUE
+6055	2010-05-06 21:00:00	1	0	0	TRUE
+6055	2010-05-06 22:00:00	1	0	0	TRUE
+6055	2010-05-06 23:00:00	1	0	0	TRUE
+6055	2010-05-07 00:00:00	1	0.2	0.2	TRUE
+6055	2010-05-07 01:00:00	1	0.19	0.19	TRUE
+6055	2010-05-07 02:00:00	1	1.15	1.15	TRUE
+6055	2010-05-07 03:00:00	1	0	0	TRUE
+6055	2010-05-07 04:00:00	1	0	0	TRUE
+6055	2010-05-07 05:00:00	1	0	0	TRUE
+6055	2010-05-07 06:00:00	1	0	0	TRUE
+6055	2010-05-07 07:00:00	1	0	0	TRUE
+6055	2010-05-07 08:00:00	1	0	0	TRUE
+6055	2010-05-07 09:00:00	1	0	0	TRUE
+6055	2010-05-07 10:00:00	1	0	0	TRUE
+6055	2010-05-07 11:00:00	1	0	0	TRUE
+6055	2010-05-07 12:00:00	1	0	0	TRUE
+6055	2010-05-07 13:00:00	1	0	0	TRUE
+6055	2010-05-07 14:00:00	1	0	0	TRUE
+6055	2010-05-07 15:00:00	1	0	0	TRUE
+6055	2010-05-07 16:00:00	1	0	0	TRUE
+6055	2010-05-07 17:00:00	1	0	0	TRUE
+6055	2010-05-07 18:00:00	1	0.19	0.19	TRUE
+6055	2010-05-07 19:00:00	1	0	0	TRUE
+6055	2010-05-07 20:00:00	1	0	0	TRUE
+6055	2010-05-07 21:00:00	1	0	0	TRUE
+6055	2010-05-07 22:00:00	1	0	0	TRUE
+6055	2010-05-07 23:00:00	1	0	0	TRUE
+6055	2010-05-08 00:00:00	1	0	0	TRUE
+6055	2010-05-08 01:00:00	1	0	0	TRUE
+6055	2010-05-08 02:00:00	1	0	0	TRUE
+6055	2010-05-08 03:00:00	1	0	0	TRUE
+6055	2010-05-08 04:00:00	1	0	0	TRUE
+6055	2010-05-08 05:00:00	1	0.19	0.19	TRUE
+6055	2010-05-08 06:00:00	1	0	0	TRUE
+6055	2010-05-08 07:00:00	1	0.2	0.2	TRUE
+6055	2010-05-08 08:00:00	1	0	0	TRUE
+6055	2010-05-08 09:00:00	1	0.19	0.19	TRUE
+6055	2010-05-08 10:00:00	1	0.19	0.19	TRUE
+6055	2010-05-08 11:00:00	1	0	0	TRUE
+6055	2010-05-08 12:00:00	1	0	0	TRUE
+6055	2010-05-08 13:00:00	1	0	0	TRUE
+6055	2010-05-08 14:00:00	1	0	0	TRUE
+6055	2010-05-08 15:00:00	1	0	0	TRUE
+6055	2010-05-08 16:00:00	1	0	0	TRUE
+6055	2010-05-08 17:00:00	1	0	0	TRUE
+6055	2010-05-08 18:00:00	1	0.58	0.58	TRUE
+6055	2010-05-08 19:00:00	1	0.19	0.19	TRUE
+6055	2010-05-08 20:00:00	1	0	0	TRUE
+6055	2010-05-08 21:00:00	1	0	0	TRUE
+6055	2010-05-08 22:00:00	1	0	0	TRUE
+6055	2010-05-08 23:00:00	1	0	0	TRUE
+6055	2010-05-09 00:00:00	1	0	0	TRUE
+6055	2010-05-09 01:00:00	1	0	0	TRUE
+6055	2010-05-09 02:00:00	1	0	0	TRUE
+6055	2010-05-09 03:00:00	1	0	0	TRUE
+6055	2010-05-09 04:00:00	1	0	0	TRUE
+6055	2010-05-09 05:00:00	1	0	0	TRUE
+6055	2010-05-09 06:00:00	1	0	0	TRUE
+6055	2010-05-09 07:00:00	1	0	0	TRUE
+6055	2010-05-09 08:00:00	1	0	0	TRUE
+6055	2010-05-09 09:00:00	1	0	0	TRUE
+6055	2010-05-09 10:00:00	1	0	0	TRUE
+6055	2010-05-09 11:00:00	1	0	0	TRUE
+6055	2010-05-09 12:00:00	1	0	0	TRUE
+6055	2010-05-09 13:00:00	1	0	0	TRUE
+6055	2010-05-09 14:00:00	1	0	0	TRUE
+6055	2010-05-09 15:00:00	1	0	0	TRUE
+6055	2010-05-09 16:00:00	1	0	0	TRUE
+6055	2010-05-09 17:00:00	1	0	0	TRUE
+6055	2010-05-09 18:00:00	1	0	0	TRUE
+6055	2010-05-09 19:00:00	1	0	0	TRUE
+6055	2010-05-09 20:00:00	1	0	0	TRUE
+6055	2010-05-09 21:00:00	1	0	0	TRUE
+6055	2010-05-09 22:00:00	1	0	0	TRUE
+6055	2010-05-09 23:00:00	1	0	0	TRUE
+6055	2010-05-10 00:00:00	1	0	0	TRUE
+6055	2010-05-10 01:00:00	1	0	0	TRUE
+6055	2010-05-10 02:00:00	1	0	0	TRUE
+6055	2010-05-10 03:00:00	1	0	0	TRUE
+6055	2010-05-10 04:00:00	1	0	0	TRUE
+6055	2010-05-10 05:00:00	1	0	0	TRUE
+6055	2010-05-10 06:00:00	1	0	0	TRUE
+6055	2010-05-10 07:00:00	1	0	0	TRUE
+6055	2010-05-10 08:00:00	1	0	0	TRUE
+6055	2010-05-10 09:00:00	1	0	0	TRUE
+6055	2010-05-10 10:00:00	1	0	0	TRUE
+6055	2010-05-10 11:00:00	1	0	0	TRUE
+6055	2010-05-10 12:00:00	1	0	0	TRUE
+6055	2010-05-10 13:00:00	1	0	0	TRUE
+6055	2010-05-10 14:00:00	1	0	0	TRUE
+6055	2010-05-10 15:00:00	1	0	0	TRUE
+6055	2010-05-10 16:00:00	1	0	0	TRUE
+6055	2010-05-10 17:00:00	1	0	0	TRUE
+6055	2010-05-10 18:00:00	1	0	0	TRUE
+6055	2010-05-10 19:00:00	1	0.38	0.38	TRUE
+6055	2010-05-10 20:00:00	1	2.69	2.69	TRUE
+6055	2010-05-10 21:00:00	1	0.58	0.58	TRUE
+6055	2010-05-10 22:00:00	1	0	0	TRUE
+6055	2010-05-10 23:00:00	1	0.19	0.19	TRUE
+6055	2010-05-11 00:00:00	1	0	0	TRUE
+6055	2010-05-11 01:00:00	1	0.57	0.57	TRUE
+6055	2010-05-11 02:00:00	1	0.39	0.39	TRUE
+6055	2010-05-11 03:00:00	1	1.15	1.15	TRUE
+6055	2010-05-11 04:00:00	1	0.96	0.96	TRUE
+6055	2010-05-11 05:00:00	1	0.19	0.19	TRUE
+6055	2010-05-11 06:00:00	1	1.35	1.35	TRUE
+6055	2010-05-11 07:00:00	1	3.07	3.07	TRUE
+6055	2010-05-11 08:00:00	1	0.57	0.57	TRUE
+6055	2010-05-11 09:00:00	1	0.96	0.96	TRUE
+6055	2010-05-11 10:00:00	1	0	0	TRUE
+6055	2010-05-11 11:00:00	1	0	0	TRUE
+6055	2010-05-11 12:00:00	1	0	0	TRUE
+6055	2010-05-11 13:00:00	1	0	0	TRUE
+6055	2010-05-11 14:00:00	1	0	0	TRUE
+6055	2010-05-11 15:00:00	1	0	0	TRUE
+6055	2010-05-11 16:00:00	1	0	0	TRUE
+6055	2010-05-11 17:00:00	1	0	0	TRUE
+6055	2010-05-11 18:00:00	1	0	0	TRUE
+6055	2010-05-11 19:00:00	1	0	0	TRUE
+6055	2010-05-11 20:00:00	1	0	0	TRUE
+6055	2010-05-11 21:00:00	1	0	0	TRUE
+6055	2010-05-11 22:00:00	1	0	0	TRUE
+6055	2010-05-11 23:00:00	1	0	0	TRUE
+6055	2010-05-12 00:00:00	1	0	0	TRUE
+6055	2010-05-12 01:00:00	1	0	0	TRUE
+6055	2010-05-12 02:00:00	1	0	0	TRUE
+6055	2010-05-12 03:00:00	1	0	0	TRUE
+6055	2010-05-12 04:00:00	1	0	0	TRUE
+6055	2010-05-12 05:00:00	1	0	0	TRUE
+6055	2010-05-12 06:00:00	1	0	0	TRUE
+6055	2010-05-12 07:00:00	1	0	0	TRUE
+6055	2010-05-12 08:00:00	1	0	0	TRUE
+6055	2010-05-12 09:00:00	1	0	0	TRUE
+6055	2010-05-12 10:00:00	1	0	0	TRUE
+6055	2010-05-12 11:00:00	1	0	0	TRUE
+6055	2010-05-12 12:00:00	1	0	0	TRUE
+6055	2010-05-12 13:00:00	1	0	0	TRUE
+6055	2010-05-12 14:00:00	1	0	0	TRUE
+6055	2010-05-12 15:00:00	1	0	0	TRUE
+6055	2010-05-12 16:00:00	1	2.53	2.53	TRUE
+6055	2010-05-12 17:00:00	1	8.46	8.46	TRUE
+6055	2010-05-12 18:00:00	1	2.12	2.12	TRUE
+6055	2010-05-12 19:00:00	1	0.57	0.57	TRUE
+6055	2010-05-12 20:00:00	1	4.33	4.33	TRUE
+6055	2010-05-12 21:00:00	1	3.92	3.92	TRUE
+6055	2010-05-12 22:00:00	1	27.22	27.22	TRUE
+6055	2010-05-12 23:00:00	1	7.06	7.06	TRUE
+6055	2010-05-13 00:00:00	1	2.35	2.35	TRUE
+6055	2010-05-13 01:00:00	1	6.32	6.32	TRUE
+6055	2010-05-13 02:00:00	1	3.14	3.14	TRUE
+6055	2010-05-13 03:00:00	1	0	0	TRUE
+6055	2010-05-13 04:00:00	1	0	0	TRUE
+6055	2010-05-13 05:00:00	1	20.02	20.02	TRUE
+
+cumulated_rainfall	duration	intensity
+147.07	252	0.583611111111111
+
+The file “Aggregated_results.txt” is an ASCII file whit a table frame. Inside the table, the main features of each single code run is reported. Whether several runs with different input variables or different input files are considered, the results will be summarized in this textual file. It is organized in 8 columns and it can be easily opened by a calculation sheet file to make graphs or further calculations according to the user needs. 
+
+ 
+
+Enjoy!!!!!
+
+
+
+
+
+ 
